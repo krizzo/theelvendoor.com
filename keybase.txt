@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/krizzo
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://theelvendoor.com
+  * I am krizzo (https://keybase.io/krizzo) on keybase.
+  * I have a public key ASBmoCdYG4KGmjCXd6EoIza0g4REKXvKWrLsf_kPG6uoLAo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0120ff9c08b651e601684ec61e976b004f90f9d711426435da136afc75908c1aaa100a",
+      "host": "keybase.io",
+      "kid": "012066a027581b82869a309777a1282336b4838444297bca5ab2ec7ff90f1baba82c0a",
+      "uid": "5acc2124939dd8c9cb46a328e6b9c319",
+      "username": "krizzo"
+    },
+    "merkle_root": {
+      "ctime": 1629211600,
+      "hash": "53f9dfd1ec07deedc3b61a2766701954dac8b802f17eef77c0ddbedf9dfb92d7b7b413222389144ce824233e9c5d64dcc292e622bb449cd78910ff144a6eee57",
+      "hash_meta": "af98a7db1b68860069ba3bf06310bbcdc6a59b4679bcb097d2321153492bdfcf",
+      "seqno": 20580778
+    },
+    "service": {
+      "entropy": "+FTXjHMSRWbX/GSpJzSYjJl/",
+      "hostname": "theelvendoor.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "5.7.0"
+  },
+  "ctime": 1629211699,
+  "expire_in": 504576000,
+  "prev": "034a4e4e8c1a7f002f0bdefd77379beb3fbb2eda99fad6fc864786074a065d90",
+  "seqno": 29,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgZqAnWBuChpowl3ehKCM2tIOERCl7ylqy7H/5DxurqCwKp3BheWxvYWTESpcCHcQgA0pOTowafwAvC979dzeb6z+7LtqZ+tb8hkeGB0oGXZDEINaSg35+FVoIvGwelogYFXNVKE1WK5tpO6YP7TL1QJrOAgHCo3NpZ8RAns6E2Q/9JDLYJqHbPmyDunO+HeQwkzGEpnwMEaylHS/fo2Nt477TvwMdXMVKR8hSJQ41tSA2cBpANCSQF3QABKhzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIPhB2w4UY27lovawu2Ng1ELKBuXeByqjJgvQz2DmdySfo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/krizzo
+
+==================================================================
