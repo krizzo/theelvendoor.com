@@ -189,16 +189,23 @@
         }
 
         // Apply color changes programmatically for Firefox compatibility
-        function applyColorChanges() {
+        function applyColorChanges(forceNov15 = null) {
             const westGate = document.getElementById('WestGate');
             const svg = westGate.querySelector('svg');
             if (!svg) return;
 
-            const now = new Date();
-            const month = now.getMonth();
-            const date = now.getDate();
-            const actualNov15 = month === 10 && date === 15;
-            const isNov15 = manualNov15Override ? manualNov15Mode : actualNov15;
+            let isNov15;
+            if (forceNov15 !== null) {
+                // Use the forced value (for immediate updates during toggles)
+                isNov15 = forceNov15;
+            } else {
+                // Use the current state logic
+                const now = new Date();
+                const month = now.getMonth();
+                const date = now.getDate();
+                const actualNov15 = month === 10 && date === 15;
+                isNov15 = manualNov15Override ? manualNov15Mode : actualNov15;
+            }
 
             const blueColor = '#4da6ff';
             const purpleColor = '#9966ff';
@@ -281,7 +288,7 @@
 
                 // Apply color changes after theme is set
                 if (svgLoaded) {
-                    applyColorChanges();
+                    applyColorChanges(isNov15);
                 }
 
                 body.classList.add('night-mode');
@@ -351,6 +358,11 @@
                 manualNov15Mode = !actualNov15; // Toggle opposite of current date
             }
 
+            // Immediately apply color changes if SVG is loaded
+            if (svgLoaded) {
+                applyColorChanges(manualNov15Mode);
+            }
+
             updateTimeAndDisplay();
             updateButtonStates();
         });
@@ -359,6 +371,16 @@
         document.getElementById('resetOverrides').addEventListener('click', function() {
             manualOverride = false;
             manualNov15Override = false;
+
+            // Immediately apply color changes if SVG is loaded
+            if (svgLoaded) {
+                const now = new Date();
+                const month = now.getMonth();
+                const date = now.getDate();
+                const actualNov15 = month === 10 && date === 15;
+                applyColorChanges(actualNov15);
+            }
+
             updateTimeAndDisplay();
             updateButtonStates();
         });
