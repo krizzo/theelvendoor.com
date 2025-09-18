@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            background-color: rgb(128, 128, 128);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        #WestGate {
+            display: none; /* Hidden by default, shown only at night */
+            max-width: 80vw;
+            max-height: 80vh;
+            filter: drop-shadow(0 0 20px #4da6ff) drop-shadow(0 0 40px #0080ff) drop-shadow(0 0 60px #0066cc);
+        }
+
+        #WestGate.glow {
+            animation: pulse 3s ease-in-out infinite alternate;
+        }
+
+        /* Dynamically change all stroke colors to blue when WestGate is visible */
+        #WestGate svg path {
+            stroke: #4da6ff !important;
+        }
+        #WestGate svg ellipse {
+            stroke: #4da6ff !important;
+        }
+        #WestGate svg circle {
+            stroke: #4da6ff !important;
+        }
+
+        /* Ensure SVG scales properly */
+        #WestGate svg {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+
+        @keyframes pulse {
+            0% {
+                filter: drop-shadow(0 0 20px #4da6ff) drop-shadow(0 0 40px #0080ff) drop-shadow(0 0 60px #0066cc);
+            }
+            100% {
+                filter: drop-shadow(0 0 30px #66b3ff) drop-shadow(0 0 60px #1a8cff) drop-shadow(0 0 90px #0073e6);
+            }
+        }
+
+        #timeInfo {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .night-mode {
+            /*background-color: rgb(64, 64, 64) !important;*/
+        }
+    </style>
+    <title>Testing Page - Doors of Durin</title>
+    <meta name="description" content="Testing page with night-time WestGate display">
+    <meta name="author" content="Kyle (krizzo) Rizzo">
+</head>
+
+<body>
+    <div id="container">
+        <div id="WestGate" class="glow"></div>
+        <div id="timeInfo">
+            <p id="currentTime"></p>
+            <p id="nightStatus"></p>
+        </div>
+    </div>
+
+    <script>
+        let manualOverride = false;
+        let manualNightMode = false;
+        let svgLoaded = false;
+
+        // Load SVG content dynamically
+        async function loadSVG() {
+            if (svgLoaded) return;
+
+            try {
+                const response = await fetch('imgs/WestGate.svg');
+                const svgText = await response.text();
+                document.getElementById('WestGate').innerHTML = svgText;
+                svgLoaded = true;
+            } catch (error) {
+                console.error('Failed to load SVG:', error);
+            }
+        }
+
+        function updateTimeAndDisplay() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            // Format time as HH:MM:SS
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // Consider night time as 6 PM (18:00) to 6 AM (06:00)
+            const isNightTime = hours >= 18 || hours < 6;
+
+            // Update time display
+            document.getElementById('currentTime').textContent = `Current time: ${timeString}`;
+
+            // Update night status and show/hide WestGate
+            const westGate = document.getElementById('WestGate');
+            const nightStatus = document.getElementById('nightStatus');
+            const body = document.body;
+
+            // Use manual override if active, otherwise use actual time
+            const shouldShowNightMode = manualOverride ? manualNightMode : isNightTime;
+
+            if (shouldShowNightMode) {
+                // Load SVG if not already loaded
+                loadSVG();
+                westGate.style.display = 'block';
+                if (manualOverride) {
+                    nightStatus.textContent = 'Manual override - WestGate is glowing (click to toggle)';
+                } else {
+                    nightStatus.textContent = 'Night time - WestGate is glowing (click to override)';
+                }
+                nightStatus.style.color = '#66b3ff';
+                body.classList.add('night-mode');
+            } else {
+                westGate.style.display = 'none';
+                if (manualOverride) {
+                    nightStatus.textContent = 'Manual override - WestGate is hidden (click to toggle)';
+                } else {
+                    nightStatus.textContent = 'Day time - WestGate is hidden (click to override)';
+                }
+                nightStatus.style.color = '#cccccc';
+                body.classList.remove('night-mode');
+            }
+        }
+
+        // Update immediately when page loads
+        updateTimeAndDisplay();
+
+        // Update every second
+        setInterval(updateTimeAndDisplay, 1000);
+
+        // For testing purposes, you can manually toggle night mode by clicking on the time info
+        document.getElementById('timeInfo').addEventListener('click', function() {
+            if (manualOverride) {
+                // If already in manual mode, toggle the night mode state
+                manualNightMode = !manualNightMode;
+            } else {
+                // Enter manual override mode and toggle current state
+                manualOverride = true;
+                const now = new Date();
+                const hours = now.getHours();
+                const isCurrentlyNight = hours >= 18 || hours < 6;
+                manualNightMode = !isCurrentlyNight; // Toggle opposite of current time
+            }
+
+            // Immediately update display
+            updateTimeAndDisplay();
+        });
+
+        // Double-click to exit manual override mode
+        document.getElementById('timeInfo').addEventListener('dblclick', function() {
+            manualOverride = false;
+            updateTimeAndDisplay();
+        });
+    </script>
+</body>
+</html>
