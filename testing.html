@@ -45,6 +45,14 @@
             stroke: #4da6ff !important;
         }
 
+        /* Change fill colors to blue for elements that are filled black */
+        #WestGate svg path[style*="fill:#000"] {
+            fill: #4da6ff !important;
+        }
+        #WestGate svg g[style*="fill:#000"] {
+            fill: #4da6ff !important;
+        }
+
         /* Ensure SVG scales properly */
         #WestGate svg {
             max-width: 100%;
@@ -70,7 +78,7 @@
         }
 
         .night-mode {
-            /*background-color: rgb(64, 64, 64) !important;*/
+            background-color: rgb(64, 64, 64) !important;
         }
     </style>
     <title>Testing Page - Doors of Durin</title>

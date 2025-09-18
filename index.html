@@ -5,19 +5,73 @@
     <meta charset="utf-8">
     <style>
         body {
-            /* background-color: rgb(96, 48, 255); */
-            background-color: rgb(99, 99, 99);
+            background-color: rgb(128, 128, 128);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
         }
-        #parent {
-            display: table;
-            margin-left: auto;
-            margin-right: auto;
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
+
         #WestGate {
-            display: table-cell;
-            vertical-align: middle;
-            margin-left: auto;
-            margin-right: auto;
+            display: none; /* Hidden by default, shown only at night */
+            max-width: 80vw;
+            max-height: 80vh;
+            filter: drop-shadow(0 0 20px #4da6ff) drop-shadow(0 0 40px #0080ff) drop-shadow(0 0 60px #0066cc);
+        }
+
+        #WestGate.glow {
+            animation: pulse 3s ease-in-out infinite alternate;
+        }
+
+        /* Dynamically change all stroke colors to blue when WestGate is visible */
+        #WestGate svg path {
+            stroke: #4da6ff !important;
+        }
+        #WestGate svg ellipse {
+            stroke: #4da6ff !important;
+        }
+        #WestGate svg circle {
+            stroke: #4da6ff !important;
+        }
+
+        /* Change fill colors to blue for elements that are filled black */
+        #WestGate svg path[style*="fill:#000"] {
+            fill: #4da6ff !important;
+        }
+        #WestGate svg g[style*="fill:#000"] {
+            fill: #4da6ff !important;
+        }
+
+        /* Ensure SVG scales properly */
+        #WestGate svg {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+        }
+
+        @keyframes pulse {
+            0% {
+                filter: drop-shadow(0 0 20px #4da6ff) drop-shadow(0 0 40px #0080ff) drop-shadow(0 0 60px #0066cc);
+            }
+            100% {
+                filter: drop-shadow(0 0 30px #66b3ff) drop-shadow(0 0 60px #1a8cff) drop-shadow(0 0 90px #0073e6);
+            }
+        }
+
+        .night-mode {
+            background-color: rgb(64, 64, 64) !important;
         }
     </style>
     <title>Doors of Durin</title>
@@ -26,8 +80,53 @@
 </head>
 
 <body>
-    <div id="parent">
-        <object data="imgs/WestGate.svg" type="image/svg+xml" id="WestGate"></object>
+    <div id="container">
+        <div id="WestGate" class="glow"></div>
     </div>
+
+    <script>
+        let svgLoaded = false;
+
+        // Load SVG content dynamically
+        async function loadSVG() {
+            if (svgLoaded) return;
+
+            try {
+                const response = await fetch('imgs/WestGate.svg');
+                const svgText = await response.text();
+                document.getElementById('WestGate').innerHTML = svgText;
+                svgLoaded = true;
+            } catch (error) {
+                console.error('Failed to load SVG:', error);
+            }
+        }
+
+        function updateDisplay() {
+            const now = new Date();
+            const hours = now.getHours();
+
+            // Consider night time as 6 PM (18:00) to 6 AM (06:00)
+            const isNightTime = hours >= 20 || hours < 6;
+
+            const westGate = document.getElementById('WestGate');
+            const body = document.body;
+
+            if (isNightTime) {
+                // Load SVG if not already loaded
+                loadSVG();
+                westGate.style.display = 'block';
+                body.classList.add('night-mode');
+            } else {
+                westGate.style.display = 'none';
+                body.classList.remove('night-mode');
+            }
+        }
+
+        // Update immediately when page loads
+        updateDisplay();
+
+        // Update every minute (no need to check every second)
+        setInterval(updateDisplay, 60000);
+    </script>
 </body>
 </html>
