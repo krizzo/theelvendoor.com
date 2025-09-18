@@ -65,19 +65,19 @@
             stroke: #9966ff !important;
         }
 
-        /* Change fill colors to blue for elements that are filled black */
-        #WestGate svg path[style*="fill:#000"] {
-            fill: #4da6ff !important;
-        }
-        #WestGate svg g[style*="fill:#000"] {
+        /* Change fill colors to blue for elements that are filled black - Firefox compatible */
+        #WestGate svg path[style*="fill:#000"],
+        #WestGate svg path[fill="#000"],
+        #WestGate svg g[style*="fill:#000"],
+        #WestGate svg g[fill="#000"] {
             fill: #4da6ff !important;
         }
 
-        /* Purple fill colors for November 15th */
-        #WestGate.purple svg path[style*="fill:#000"] {
-            fill: #9966ff !important;
-        }
-        #WestGate.purple svg g[style*="fill:#000"] {
+        /* Purple fill colors for November 15th - Firefox compatible */
+        #WestGate.purple svg path[style*="fill:#000"],
+        #WestGate.purple svg path[fill="#000"],
+        #WestGate.purple svg g[style*="fill:#000"],
+        #WestGate.purple svg g[fill="#000"] {
             fill: #9966ff !important;
         }
 
@@ -180,9 +180,38 @@
                 const svgText = await response.text();
                 document.getElementById('WestGate').innerHTML = svgText;
                 svgLoaded = true;
+
+                // Apply color changes programmatically for better browser compatibility
+                applyColorChanges();
             } catch (error) {
                 console.error('Failed to load SVG:', error);
             }
+        }
+
+        // Apply color changes programmatically for Firefox compatibility
+        function applyColorChanges() {
+            const westGate = document.getElementById('WestGate');
+            const svg = westGate.querySelector('svg');
+            if (!svg) return;
+
+            const now = new Date();
+            const month = now.getMonth();
+            const date = now.getDate();
+            const actualNov15 = month === 10 && date === 15;
+            const isNov15 = manualNov15Override ? manualNov15Mode : actualNov15;
+
+            const blueColor = '#4da6ff';
+            const purpleColor = '#9966ff';
+            const targetColor = isNov15 ? purpleColor : blueColor;
+
+            // Find all elements with black fill and change them
+            const elementsToChange = svg.querySelectorAll('path[style*="fill:#000"], g[style*="fill:#000"], path[fill="#000"], g[fill="#000"]');
+
+            elementsToChange.forEach(element => {
+                element.style.fill = targetColor;
+                // Also set the fill attribute for maximum compatibility
+                element.setAttribute('fill', targetColor);
+            });
         }
 
         function updateTimeAndDisplay() {
@@ -248,6 +277,11 @@
                     }
                     nightStatus.textContent = statusText;
                     nightStatus.style.color = '#66b3ff';
+                }
+
+                // Apply color changes after theme is set
+                if (svgLoaded) {
+                    applyColorChanges();
                 }
 
                 body.classList.add('night-mode');
