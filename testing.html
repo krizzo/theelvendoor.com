@@ -30,8 +30,17 @@
             filter: drop-shadow(0 0 20px #4da6ff) drop-shadow(0 0 40px #0080ff) drop-shadow(0 0 60px #0066cc);
         }
 
+        /* Purple theme for November 15th */
+        #WestGate.purple {
+            filter: drop-shadow(0 0 20px #9966ff) drop-shadow(0 0 40px #7f4dff) drop-shadow(0 0 60px #6633cc);
+        }
+
         #WestGate.glow {
             animation: pulse 3s ease-in-out infinite alternate;
+        }
+
+        #WestGate.purple.glow {
+            animation: pulsePurple 3s ease-in-out infinite alternate;
         }
 
         /* Dynamically change all stroke colors to blue when WestGate is visible */
@@ -45,12 +54,31 @@
             stroke: #4da6ff !important;
         }
 
+        /* Purple stroke colors for November 15th */
+        #WestGate.purple svg path {
+            stroke: #9966ff !important;
+        }
+        #WestGate.purple svg ellipse {
+            stroke: #9966ff !important;
+        }
+        #WestGate.purple svg circle {
+            stroke: #9966ff !important;
+        }
+
         /* Change fill colors to blue for elements that are filled black */
         #WestGate svg path[style*="fill:#000"] {
             fill: #4da6ff !important;
         }
         #WestGate svg g[style*="fill:#000"] {
             fill: #4da6ff !important;
+        }
+
+        /* Purple fill colors for November 15th */
+        #WestGate.purple svg path[style*="fill:#000"] {
+            fill: #9966ff !important;
+        }
+        #WestGate.purple svg g[style*="fill:#000"] {
+            fill: #9966ff !important;
         }
 
         /* Ensure SVG scales properly */
@@ -70,11 +98,47 @@
             }
         }
 
+        @keyframes pulsePurple {
+            0% {
+                filter: drop-shadow(0 0 20px #9966ff) drop-shadow(0 0 40px #7f4dff) drop-shadow(0 0 60px #6633cc);
+            }
+            100% {
+                filter: drop-shadow(0 0 30px #b380ff) drop-shadow(0 0 60px #9966ff) drop-shadow(0 0 90px #7f4dff);
+            }
+        }
+
         #timeInfo {
             color: white;
             text-align: center;
             margin-top: 20px;
             font-size: 18px;
+        }
+
+        #controls {
+            color: white;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        #controls button {
+            background-color: #444;
+            color: white;
+            border: 1px solid #666;
+            padding: 8px 16px;
+            margin: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #controls button:hover {
+            background-color: #555;
+        }
+
+        #controls button.active {
+            background-color: #666;
+            border-color: #888;
         }
 
         .night-mode {
@@ -93,11 +157,18 @@
             <p id="currentTime"></p>
             <p id="nightStatus"></p>
         </div>
+        <div id="controls">
+            <p>Testing Controls:</p>
+            <button id="toggleNov15">Toggle Nov 15th Theme</button>
+            <button id="resetOverrides">Reset All Overrides</button>
+        </div>
     </div>
 
     <script>
         let manualOverride = false;
         let manualNightMode = false;
+        let manualNov15Override = false;
+        let manualNov15Mode = false;
         let svgLoaded = false;
 
         // Load SVG content dynamically
@@ -119,9 +190,15 @@
             const hours = now.getHours();
             const minutes = now.getMinutes();
             const seconds = now.getSeconds();
+            const month = now.getMonth(); // 0-based (November = 10)
+            const date = now.getDate();
 
             // Format time as HH:MM:SS
             const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // Check if it's November 15th (with manual override)
+            const actualNov15 = month === 10 && date === 15;
+            const isNov15 = manualNov15Override ? manualNov15Mode : actualNov15;
 
             // Consider night time as 6 PM (18:00) to 6 AM (06:00)
             const isNightTime = hours >= 18 || hours < 6;
@@ -141,20 +218,53 @@
                 // Load SVG if not already loaded
                 loadSVG();
                 westGate.style.display = 'block';
-                if (manualOverride) {
-                    nightStatus.textContent = 'Manual override - WestGate is glowing (click to toggle)';
+
+                // Apply purple theme on November 15th
+                if (isNov15) {
+                    westGate.classList.add('purple');
+                    let statusText = '';
+                    if (manualOverride && manualNov15Override) {
+                        statusText = 'Manual overrides - WestGate is glowing purple (Nov 15th override) (click to toggle night)';
+                    } else if (manualOverride) {
+                        statusText = 'Manual night override - WestGate is glowing purple (Nov 15th) (click to toggle night)';
+                    } else if (manualNov15Override) {
+                        statusText = 'Night time - WestGate is glowing purple (Nov 15th override) (click to override night)';
+                    } else {
+                        statusText = 'Night time - WestGate is glowing purple (Nov 15th) (click to override night)';
+                    }
+                    nightStatus.textContent = statusText;
+                    nightStatus.style.color = '#b380ff';
                 } else {
-                    nightStatus.textContent = 'Night time - WestGate is glowing (click to override)';
+                    westGate.classList.remove('purple');
+                    let statusText = '';
+                    if (manualOverride && manualNov15Override) {
+                        statusText = 'Manual overrides - WestGate is glowing (Nov 15th override off) (click to toggle night)';
+                    } else if (manualOverride) {
+                        statusText = 'Manual night override - WestGate is glowing (click to toggle night)';
+                    } else if (manualNov15Override) {
+                        statusText = 'Night time - WestGate is glowing (Nov 15th override off) (click to override night)';
+                    } else {
+                        statusText = 'Night time - WestGate is glowing (click to override night)';
+                    }
+                    nightStatus.textContent = statusText;
+                    nightStatus.style.color = '#66b3ff';
                 }
-                nightStatus.style.color = '#66b3ff';
+
                 body.classList.add('night-mode');
             } else {
                 westGate.style.display = 'none';
-                if (manualOverride) {
-                    nightStatus.textContent = 'Manual override - WestGate is hidden (click to toggle)';
+                westGate.classList.remove('purple');
+                let statusText = '';
+                if (manualOverride && manualNov15Override) {
+                    statusText = 'Manual overrides - WestGate is hidden (Nov 15th override active) (click to toggle night)';
+                } else if (manualOverride) {
+                    statusText = 'Manual night override - WestGate is hidden (click to toggle night)';
+                } else if (manualNov15Override) {
+                    statusText = 'Day time - WestGate is hidden (Nov 15th override active) (click to override night)';
                 } else {
-                    nightStatus.textContent = 'Day time - WestGate is hidden (click to override)';
+                    statusText = 'Day time - WestGate is hidden (click to override night)';
                 }
+                nightStatus.textContent = statusText;
                 nightStatus.style.color = '#cccccc';
                 body.classList.remove('night-mode');
             }
@@ -182,13 +292,65 @@
 
             // Immediately update display
             updateTimeAndDisplay();
+            updateButtonStates();
         });
 
         // Double-click to exit manual override mode
         document.getElementById('timeInfo').addEventListener('dblclick', function() {
             manualOverride = false;
             updateTimeAndDisplay();
+            updateButtonStates();
         });
+
+        // November 15th toggle button
+        document.getElementById('toggleNov15').addEventListener('click', function() {
+            if (manualNov15Override) {
+                // If already in manual mode, toggle the Nov 15th state
+                manualNov15Mode = !manualNov15Mode;
+            } else {
+                // Enter manual override mode and toggle current state
+                manualNov15Override = true;
+                const now = new Date();
+                const month = now.getMonth();
+                const date = now.getDate();
+                const actualNov15 = month === 10 && date === 15;
+                manualNov15Mode = !actualNov15; // Toggle opposite of current date
+            }
+
+            updateTimeAndDisplay();
+            updateButtonStates();
+        });
+
+        // Reset all overrides button
+        document.getElementById('resetOverrides').addEventListener('click', function() {
+            manualOverride = false;
+            manualNov15Override = false;
+            updateTimeAndDisplay();
+            updateButtonStates();
+        });
+
+        // Function to update button states
+        function updateButtonStates() {
+            const nov15Button = document.getElementById('toggleNov15');
+            const resetButton = document.getElementById('resetOverrides');
+
+            if (manualNov15Override) {
+                nov15Button.classList.add('active');
+                nov15Button.textContent = manualNov15Mode ? 'Nov 15th: ON (click to toggle)' : 'Nov 15th: OFF (click to toggle)';
+            } else {
+                nov15Button.classList.remove('active');
+                nov15Button.textContent = 'Toggle Nov 15th Theme';
+            }
+
+            if (manualOverride || manualNov15Override) {
+                resetButton.classList.add('active');
+            } else {
+                resetButton.classList.remove('active');
+            }
+        }
+
+        // Initialize button states
+        updateButtonStates();
     </script>
 </body>
 </html>

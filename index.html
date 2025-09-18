@@ -30,8 +30,17 @@
             filter: drop-shadow(0 0 20px #4da6ff) drop-shadow(0 0 40px #0080ff) drop-shadow(0 0 60px #0066cc);
         }
 
+        /* Purple theme for November 15th */
+        #WestGate.purple {
+            filter: drop-shadow(0 0 20px #9966ff) drop-shadow(0 0 40px #7f4dff) drop-shadow(0 0 60px #6633cc);
+        }
+
         #WestGate.glow {
             animation: pulse 3s ease-in-out infinite alternate;
+        }
+
+        #WestGate.purple.glow {
+            animation: pulsePurple 3s ease-in-out infinite alternate;
         }
 
         /* Dynamically change all stroke colors to blue when WestGate is visible */
@@ -45,12 +54,31 @@
             stroke: #4da6ff !important;
         }
 
+        /* Purple stroke colors for November 15th */
+        #WestGate.purple svg path {
+            stroke: #9966ff !important;
+        }
+        #WestGate.purple svg ellipse {
+            stroke: #9966ff !important;
+        }
+        #WestGate.purple svg circle {
+            stroke: #9966ff !important;
+        }
+
         /* Change fill colors to blue for elements that are filled black */
         #WestGate svg path[style*="fill:#000"] {
             fill: #4da6ff !important;
         }
         #WestGate svg g[style*="fill:#000"] {
             fill: #4da6ff !important;
+        }
+
+        /* Purple fill colors for November 15th */
+        #WestGate.purple svg path[style*="fill:#000"] {
+            fill: #9966ff !important;
+        }
+        #WestGate.purple svg g[style*="fill:#000"] {
+            fill: #9966ff !important;
         }
 
         /* Ensure SVG scales properly */
@@ -67,6 +95,15 @@
             }
             100% {
                 filter: drop-shadow(0 0 30px #66b3ff) drop-shadow(0 0 60px #1a8cff) drop-shadow(0 0 90px #0073e6);
+            }
+        }
+
+        @keyframes pulsePurple {
+            0% {
+                filter: drop-shadow(0 0 20px #9966ff) drop-shadow(0 0 40px #7f4dff) drop-shadow(0 0 60px #6633cc);
+            }
+            100% {
+                filter: drop-shadow(0 0 30px #b380ff) drop-shadow(0 0 60px #9966ff) drop-shadow(0 0 90px #7f4dff);
             }
         }
 
@@ -104,6 +141,11 @@
         function updateDisplay() {
             const now = new Date();
             const hours = now.getHours();
+            const month = now.getMonth(); // 0-based (November = 10)
+            const date = now.getDate();
+
+            // Check if it's November 15th
+            const isNov15 = month === 10 && date === 15;
 
             // Consider night time as 6 PM (18:00) to 6 AM (06:00)
             const isNightTime = hours >= 20 || hours < 6;
@@ -115,9 +157,18 @@
                 // Load SVG if not already loaded
                 loadSVG();
                 westGate.style.display = 'block';
+
+                // Apply purple theme on November 15th
+                if (isNov15) {
+                    westGate.classList.add('purple');
+                } else {
+                    westGate.classList.remove('purple');
+                }
+
                 body.classList.add('night-mode');
             } else {
                 westGate.style.display = 'none';
+                westGate.classList.remove('purple');
                 body.classList.remove('night-mode');
             }
         }
